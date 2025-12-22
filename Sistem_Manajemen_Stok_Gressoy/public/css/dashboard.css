@@ -1,0 +1,43 @@
+/* DASHBOARD STYLES */
+
+.dashboard-container {
+    padding: 10px;
+}
+
+/* CARDS */
+.card {
+    transition: transform 0.2s;
+}
+
+.card:hover {
+    transform: translateY(-5px);
+}
+
+.icon-box {
+    width: 60px;
+    height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    border-radius: 50%;
+}
+
+.bg-light.text-success.rounded-circle {
+    background-color: rgba(46, 204, 113, 0.1) !important;
+    color: #2ecc71 !important;
+}
+
+.bg-light.text-warning.rounded-circle {
+    background-color: rgba(243, 156, 18, 0.1) !important;
+    color: #f39c12 !important;
+}
+
+.bg-light.text-danger.rounded-circle {
+    background-color: rgba(231, 76, 60, 0.1) !important;
+    color: #e74c3c !important;
+}
+
+.card h5 {
+    font-size: 24px;
+    margin-top: 10px;
+}

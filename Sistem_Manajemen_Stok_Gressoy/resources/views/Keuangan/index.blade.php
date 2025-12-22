@@ -1,594 +1,324 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="csrf-token" content="{{ csrf_token() }}">
-    <title>Keuangan Pembelian Bahan Baku - Gressoy</title>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+@extends('layouts.app')
 
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, sans-serif;
-            background: #f5f5f5;
-            display: flex;
-        }
+@section('content')
+<link rel="stylesheet" href="{{ asset('css/keuangan.css') }}">
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-        .sidebar {
-            width: 200px;
-            background: white;
-            min-height: 100vh;
-            padding: 20px;
-            border-right: 1px solid #e0e0e0;
-            position: fixed;
-            left: 0;
-            top: 0;
-        }
+<div class="keuangan-container">
+    {{-- HEADER --}}
+    <div class="page-header d-flex justify-content-between align-items-center mb-4 border-bottom pb-3">
+        <div>
+            <h2 class="fw-bold mb-1">Keuangan Pembelian Bahan Baku</h2>
+            <p class="text-muted mb-0">Kelola Pengeluaran Pembelian Bahan Baku perusahaan</p>
+        </div>
+        <button class="btn btn-success rounded-pill px-4" data-bs-toggle="modal" data-bs-target="#modalTambah">
+            <i class="bi bi-plus-lg me-2"></i>Tambah Transaksi
+        </button>
+    </div>
 
-        .logo-section {
-            margin-bottom: 40px;
-        }
+    {{-- SUMMARY CARD --}}
+    <div class="card border-0 shadow-sm mb-4 summary-card">
+        <div class="card-body d-flex align-items-center p-4">
+            <div class="icon-box bg-light text-success rounded-circle me-3 d-flex align-items-center justify-content-center" style="width: 60px; height: 60px;">
+                <i class="bi bi-arrow-up-circle-fill fs-3"></i>
+            </div>
+            <div>
+                <p class="text-muted mb-1 fw-bold">Total Pengeluaran Pembelian Bahan Baku</p>
+                <h3 class="fw-bold text-success mb-0">Rp {{ number_format($totalPengeluaran, 0, ',', '.') }}</h3>
+            </div>
+        </div>
+    </div>
 
-        .logo-title {
-            font-size: 20px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .logo-subtitle {
-            font-size: 11px;
-            color: #666;
-            line-height: 1.4;
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-top: 20px;
-            padding-bottom: 20px;
-            border-bottom: 1px solid #e0e0e0;
-        }
-
-        .user-avatar {
-            width: 40px;
-            height: 40px;
-            background: #e0e0e0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #999;
-            font-weight: 600;
-        }
-
-        .user-details {
-            flex: 1;
-        }
-
-        .user-email {
-            font-size: 11px;
-            color: #666;
-        }
-
-        .user-name {
-            font-size: 12px;
-            color: #333;
-            font-weight: 500;
-            margin-top: 2px;
-        }
-
-        .menu {
-            margin-top: 30px;
-        }
-
-        .menu-item {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            margin-bottom: 5px;
-            color: #333;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            transition: all 0.3s;
-        }
-
-        .menu-item:hover {
-            background: #f0f0f0;
-        }
-
-        .menu-item.active {
-            background: #2ecc71;
-            color: white;
-        }
-
-        .menu-icon {
-            width: 20px;
-            height: 20px;
-        }
-
-        .logout {
-            margin-top: 30px;
-            padding-top: 20px;
-            border-top: 1px solid #e0e0e0;
-        }
-
-        .logout-btn {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            padding: 12px 15px;
-            color: #e74c3c;
-            text-decoration: none;
-            border-radius: 8px;
-            font-size: 14px;
-            background: none;
-            border: none;
-            width: 100%;
-            cursor: pointer;
-            transition: all 0.3s;
-            text-align: left;
-        }
-
-        .logout-btn:hover {
-            background: #fee;
-        }
-
-        .main-content {
-            flex: 1;
-            margin-left: 200px;
-            padding: 30px 40px;
-        }
-
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 30px;
-        }
-
-        .header-title {
-            font-size: 24px;
-            font-weight: 700;
-            color: #333;
-            margin-bottom: 5px;
-        }
-
-        .header-subtitle {
-            font-size: 13px;
-            color: #666;
-        }
-
-        .add-btn {
-            background: #2ecc71;
-            color: white;
-            border: none;
-            padding: 10px 20px;
-            border-radius: 6px;
-            font-size: 14px;
-            cursor: pointer;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-            transition: all 0.3s;
-        }
-
-        .add-btn:hover {
-            background: #27ae60;
-            transform: translateY(-1px);
-        }
-
-        .summary-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #e8e8e8;
-        }
-
-        .summary-header {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            margin-bottom: 15px;
-        }
-
-        .summary-icon {
-            width: 45px;
-            height: 45px;
-            background: #e8f8f0;
-            border-radius: 50%;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            color: #2ecc71;
-        }
-
-        .summary-label {
-            font-size: 13px;
-            color: #666;
-            margin-bottom: 8px;
-        }
-
-        .summary-amount {
-            font-size: 22px;
-            font-weight: 700;
-            color: #2ecc71;
-        }
-
-        .chart-card {
-            background: white;
-            border-radius: 12px;
-            padding: 25px;
-            margin-bottom: 25px;
-            box-shadow: 0 2px 4px rgba(0,0,0,0.05);
-            border: 1px solid #e8e8e8;
-        }
-
-        .chart-title {
-            font-size: 15px;
-            font-weight: 600;
-            color: #333;
-            margin-bottom: 20px;
-        }
-
-        .chart-container {
-            position: relative;
-            height: 300px;
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                position: relative;
-                min-height: auto;
-            }
-
-            .main-content {
-                margin-left: 0;
-                padding: 20px;
-            }
-
-            .header {
-                flex-direction: column;
-                align-items: flex-start;
-                gap: 15px;
-            }
-        }
-    </style>
-</head>
-<body>
-    <!-- Sidebar -->
-    <div class="sidebar">
-        <div class="logo-section">
-            <div class="logo-title">Gressoy</div>
-            <div class="logo-subtitle">Sistem Manajemen Stok</div>
-            
-            <div class="user-info">
-                <div class="user-avatar">👤</div>
-                <div class="user-details">
-                    <div class="user-email">Enan@gmail.com</div>
-                    <div class="user-name">Shanyesha Erlend Wijayina</div>
+    {{-- CHARTS ROW --}}
+    <div class="row mb-4">
+        {{-- LINE CHART --}}
+        <div class="col-md-8">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Pengeluaran Pembelian Bahan Baku</h5>
+                    <div style="height: 300px;">
+                        <canvas id="pengeluaranChart"></canvas>
+                    </div>
                 </div>
             </div>
         </div>
+        
+        {{-- BAR CHART --}}
+        <div class="col-md-4">
+            <div class="card border-0 shadow-sm h-100">
+                <div class="card-body p-4">
+                    <h5 class="fw-bold mb-4">Perbandingan Bulanan</h5>
+                    <div style="height: 300px;">
+                        <canvas id="perbandinganChart"></canvas>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
 
-        <nav class="menu">
-            <a href="{{ route('dashboard') }}" class="menu-item">
-                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <rect x="3" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="3" width="7" height="7"></rect>
-                    <rect x="14" y="14" width="7" height="7"></rect>
-                    <rect x="3" y="14" width="7" height="7"></rect>
-                </svg>
-                Dashboard
-            </a>
+    {{-- TABLE --}}
+    <div class="card border-0 shadow-sm">
+        <div class="card-body p-4">
+            <h5 class="fw-bold mb-4">Daftar Transaksi Pembelian</h5>
+            
+            <div class="table-responsive">
+                <table class="table table-hover align-middle">
+                    <thead class="bg-light">
+                        <tr>
+                            <th class="py-3 ps-3">Tanggal</th>
+                            <th class="py-3">ID</th>
+                            <th class="py-3">Kategori</th>
+                            <th class="py-3">Deskripsi</th>
+                            <th class="py-3">Jumlah (Rp)</th>
+                            <th class="py-3 pe-3 text-end">Aksi</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        @forelse($data as $item)
+                        <tr>
+                            <td class="ps-3">{{ $item->tanggal }}</td>
+                            <td class="fw-bold text-primary">{{ $item->kode }}</td>
+                            <td><span class="badge bg-light text-dark border">{{ $item->kategori }}</span></td>
+                            <td>{{Str::limit($item->deskripsi, 30)}}</td>
+                            <td class="fw-bold">Rp {{ number_format($item->jumlah, 0, ',', '.') }}</td>
+                            <td class="text-end pe-3">
+                                <button class="btn btn-sm btn-outline-warning me-1 btn-edit" 
+                                    data-id="{{ $item->id }}"
+                                    data-json="{{ json_encode($item) }}">
+                                    <i class="bi bi-pencil"></i>
+                                </button>
+                                <form action="{{ route('keuangan.destroy', $item->id) }}" method="POST" class="d-inline">
+                                    @csrf
+                                    @method('DELETE')
+                                    <button class="btn btn-sm btn-outline-danger" onclick="return confirm('Hapus transaksi this?')"><i class="bi bi-trash"></i></button>
+                                </form>
+                            </td>
+                        </tr>
+                        @empty
+                        <tr>
+                            <td colspan="6" class="text-center py-5 text-muted">Belum ada data transaksi.</td>
+                        </tr>
+                        @endforelse
+                    </tbody>
+                </table>
+            </div>
+        </div>
+    </div>
+</div>
 
-            <a href="{{ route('keuangan.index') }}" class="menu-item active">
-                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="10"></circle>
-                    <line x1="12" y1="8" x2="12" y2="12"></line>
-                    <line x1="12" y1="16" x2="12.01" y2="16"></line>
-                </svg>
-                Keuangan
-            </a>
-
-            <a href="{{ route('bahan-baku') }}" class="menu-item">
-                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"></path>
-                    <polyline points="3.27 6.96 12 12.01 20.73 6.96"></polyline>
-                    <line x1="12" y1="22.08" x2="12" y2="12"></line>
-                </svg>
-                Bahan Baku
-            </a>
-
-            <a href="{{ route('laporan') }}" class="menu-item">
-                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <path d="M14 2H6a2 2 0 0 0-2 2v16a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2V8z"></path>
-                    <polyline points="14 2 14 8 20 8"></polyline>
-                    <line x1="9" y1="15" x2="15" y2="15"></line>
-                    <line x1="9" y1="12" x2="15" y2="12"></line>
-                </svg>
-                Laporan
-            </a>
-
-            <a href="{{ route('pengaturan') }}" class="menu-item">
-                <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                    <circle cx="12" cy="12" r="3"></circle>
-                    <path d="M12 1v6m0 6v6"></path>
-                    <path d="m4.93 4.93 4.24 4.24m5.66 5.66 4.24 4.24"></path>
-                    <path d="M1 12h6m6 0h6"></path>
-                    <path d="m4.93 19.07 4.24-4.24m5.66-5.66 4.24-4.24"></path>
-                </svg>
-                Pengaturan
-            </a>
-        </nav>
-
-        <div class="logout">
-            <form action="{{ route('logout') }}" method="POST">
+{{-- MODAL TAMBAH --}}
+<div class="modal fade" id="modalTambah" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold ms-2 mt-2">Tambah Transaksi</h5>
+                <button type="button" class="btn-close me-2 mt-2" data-bs-dismiss="modal"></button>
+            </div>
+            
+            <form action="{{ route('keuangan.store') }}" method="POST">
                 @csrf
-                <button type="submit" class="logout-btn" onclick="return confirm('Yakin ingin keluar?')">
-                    <svg class="menu-icon" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"></path>
-                        <polyline points="16 17 21 12 16 7"></polyline>
-                        <line x1="21" y1="12" x2="9" y2="12"></line>
-                    </svg>
-                    Keluar
-                </button>
+                <input type="hidden" name="tipe" value="Pengeluaran"> {{-- Default Pengeluaran per design --}}
+                
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tipe</label>
+                        <input type="text" class="form-control bg-light border-0" value="Pengeluaran" readonly>
+                        <input type="hidden" name="tipe" value="Pengeluaran">
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Jumlah (RP)</label>
+                        <input type="number" name="jumlah" class="form-control bg-light border-0" placeholder="Masukkan nominal" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Kategori</label>
+                        <select name="kategori" class="form-select bg-light border-0" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="Bahan Baku">Bahan Baku</option>
+                            <option value="Bahan Tambahan">Bahan Tambahan</option>
+                            <option value="Kemasan">Kemasan</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tanggal</label>
+                        <input type="date" name="tanggal" class="form-control bg-light border-0" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">ID</label>
+                        <input type="text" name="kode" class="form-control bg-light border-0" placeholder="Contoh: TRX001" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Deskripsi</label>
+                        <input type="text" name="deskripsi" class="form-control bg-light border-0" placeholder="Keterangan transaksi">
+                    </div>
+                </div>
+
+                <div class="modal-footer border-0 pt-0 pe-4 pb-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-success rounded-pill px-4">Simpan</button>
+                </div>
             </form>
         </div>
     </div>
+</div>
 
-    <!-- Main Content -->
-    <div class="main-content">
-        <div class="header">
-            <div>
-                <h1 class="header-title">Keuangan Pembelian Bahan Baku</h1>
-                <p class="header-subtitle">Kelola Pengeluaran dan Pembelian Bahan Baku perusahaan</p>
+{{-- MODAL EDIT --}}
+<div class="modal fade" id="modalEdit" tabindex="-1">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content border-0 shadow-lg rounded-4">
+            <div class="modal-header border-0 pb-0">
+                <h5 class="modal-title fw-bold ms-2 mt-2">Edit Transaksi</h5>
+                <button type="button" class="btn-close me-2 mt-2" data-bs-dismiss="modal"></button>
             </div>
-            <button class="add-btn" onclick="alert('Fitur tambah transaksi akan segera tersedia')">
-                <span style="font-size: 18px;">+</span>
-                Tambah Transaksi
-            </button>
-        </div>
+            
+            <form id="formEdit" method="POST">
+                @csrf
+                @method('PUT')
+                
+                <div class="modal-body p-4">
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tipe</label>
+                        <input type="text" class="form-control bg-light border-0" value="Pengeluaran" readonly>
+                        <input type="hidden" name="tipe" id="editTipe" value="Pengeluaran">
+                    </div>
 
-        @if(session('success'))
-        <div style="background: #d4edda; color: #155724; padding: 15px; border-radius: 8px; margin-bottom: 20px;">
-            {{ session('success') }}
-        </div>
-        @endif
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Jumlah (RP)</label>
+                        <input type="number" name="jumlah" id="editJumlah" class="form-control bg-light border-0" required>
+                    </div>
 
-        <!-- Total Pengeluaran -->
-        <div class="summary-card">
-            <div class="summary-header">
-                <div class="summary-icon">
-                    <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
-                        <circle cx="12" cy="12" r="10"></circle>
-                        <path d="M16 8h-6a2 2 0 1 0 0 4h4a2 2 0 1 1 0 4H8"></path>
-                        <path d="M12 18V6"></path>
-                    </svg>
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Kategori</label>
+                        <select name="kategori" id="editKategori" class="form-select bg-light border-0" required>
+                            <option value="">Pilih Kategori</option>
+                            <option value="Bahan Baku">Bahan Baku</option>
+                            <option value="Bahan Tambahan">Bahan Tambahan</option>
+                            <option value="Kemasan">Kemasan</option>
+                        </select>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Tanggal</label>
+                        <input type="date" name="tanggal" id="editTanggal" class="form-control bg-light border-0" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">ID</label>
+                        <input type="text" name="kode" id="editKode" class="form-control bg-light border-0" required>
+                    </div>
+
+                    <div class="mb-3">
+                        <label class="form-label fw-bold small text-muted">Deskripsi</label>
+                        <input type="text" name="deskripsi" id="editDeskripsi" class="form-control bg-light border-0">
+                    </div>
                 </div>
-            </div>
-            <div class="summary-label">Total Pengeluaran Pembelian Bahan Baku</div>
-            <div class="summary-amount">Rp. {{ number_format($totalPengeluaran, 0, ',', '.') }}</div>
-        </div>
 
-        <!-- Line Chart - Pengeluaran Pembelian Bahan Baku -->
-        <div class="chart-card">
-            <h2 class="chart-title">Pengeluaran Pembelian Bahan Baku</h2>
-            <div class="chart-container">
-                <canvas id="lineChart"></canvas>
-            </div>
-        </div>
-
-        <!-- Bar Chart - Perbandingan Bulanan -->
-        <div class="chart-card">
-            <h2 class="chart-title">Perbandingan Bulanan</h2>
-            <div class="chart-container">
-                <canvas id="barChart"></canvas>
-            </div>
+                <div class="modal-footer border-0 pt-0 pe-4 pb-4">
+                    <button type="button" class="btn btn-outline-secondary rounded-pill px-4" data-bs-dismiss="modal">Batal</button>
+                    <button type="submit" class="btn btn-warning rounded-pill px-4 text-white">Update</button>
+                </div>
+            </form>
         </div>
     </div>
+</div>
 
-    <script>
-        // Data dari Laravel Controller
-        const dataPengeluaran = @json($dataPengeluaran);
-        const dataPerbandingan = @json($dataPerbandingan);
+{{-- SCRIPT CHART & MODAL --}}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    // EDIT MODAL LOGIC
+    const editButtons = document.querySelectorAll('.btn-edit');
+    const modalEdit = new bootstrap.Modal(document.getElementById('modalEdit'));
+    const formEdit = document.getElementById('formEdit');
 
-        // Line Chart - Sesuai Design
-        const lineCtx = document.getElementById('lineChart').getContext('2d');
-        new Chart(lineCtx, {
-            type: 'line',
-            data: {
-                labels: dataPengeluaran.map(d => d.bulan),
-                datasets: [
-                    {
-                        label: 'Pembelian',
-                        data: dataPengeluaran.map(d => d.pembelian),
-                        borderColor: '#2ecc71',
-                        backgroundColor: 'rgba(46, 204, 113, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#2ecc71',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2
-                    },
-                    {
-                        label: 'Pengeluaran',
-                        data: dataPengeluaran.map(d => d.pengeluaran),
-                        borderColor: '#f39c12',
-                        backgroundColor: 'rgba(243, 156, 18, 0.1)',
-                        borderWidth: 2,
-                        tension: 0.4,
-                        fill: true,
-                        pointRadius: 4,
-                        pointBackgroundColor: '#f39c12',
-                        pointBorderColor: '#fff',
-                        pointBorderWidth: 2
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20,
-                            font: {
-                                size: 12
-                            }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 12,
-                        titleFont: {
-                            size: 13
-                        },
-                        bodyFont: {
-                            size: 12
-                        },
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return 'Rp ' + (value / 1000000) + 'jt';
-                            },
-                            font: {
-                                size: 11
-                            }
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            font: {
-                                size: 11
-                            }
-                        }
-                    }
-                }
-            }
+    editButtons.forEach(button => {
+        button.addEventListener('click', function() {
+            const id = this.dataset.id;
+            const data = JSON.parse(this.dataset.json);
+
+            // Populate form
+            document.getElementById('editTipe').value = data.tipe;
+            document.getElementById('editJumlah').value = data.jumlah;
+            document.getElementById('editKategori').value = data.kategori;
+            document.getElementById('editTanggal').value = data.tanggal;
+            document.getElementById('editKode').value = data.kode;
+            document.getElementById('editDeskripsi').value = data.deskripsi;
+
+            // Set Action URL
+            formEdit.action = `/keuangan/${id}`;
+
+            modalEdit.show();
         });
+    });
 
-        // Bar Chart - Sesuai Design
-        const barCtx = document.getElementById('barChart').getContext('2d');
-        new Chart(barCtx, {
-            type: 'bar',
-            data: {
-                labels: dataPerbandingan.map(d => d.bulan),
-                datasets: [
-                    {
-                        label: 'Pembelian',
-                        data: dataPerbandingan.map(d => d.pembelian),
-                        backgroundColor: '#2ecc71',
-                        borderRadius: 6,
-                        borderSkipped: false
-                    },
-                    {
-                        label: 'Pengeluaran',
-                        data: dataPerbandingan.map(d => d.pengeluaran),
-                        backgroundColor: '#f39c12',
-                        borderRadius: 6,
-                        borderSkipped: false
-                    }
-                ]
-            },
-            options: {
-                responsive: true,
-                maintainAspectRatio: false,
-                plugins: {
-                    legend: {
-                        position: 'bottom',
-                        labels: {
-                            usePointStyle: true,
-                            padding: 20,
-                            font: {
-                                size: 12
-                            }
-                        }
-                    },
-                    tooltip: {
-                        backgroundColor: 'rgba(0, 0, 0, 0.8)',
-                        padding: 12,
-                        titleFont: {
-                            size: 13
-                        },
-                        bodyFont: {
-                            size: 12
-                        },
-                        callbacks: {
-                            label: function(context) {
-                                let label = context.dataset.label || '';
-                                if (label) {
-                                    label += ': ';
-                                }
-                                label += 'Rp ' + context.parsed.y.toLocaleString('id-ID');
-                                return label;
-                            }
-                        }
-                    }
-                },
-                scales: {
-                    y: {
-                        beginAtZero: true,
-                        grid: {
-                            color: 'rgba(0, 0, 0, 0.05)'
-                        },
-                        ticks: {
-                            callback: function(value) {
-                                return 'Rp ' + (value / 1000000) + 'jt';
-                            },
-                            font: {
-                                size: 11
-                            }
-                        }
-                    },
-                    x: {
-                        grid: {
-                            display: false
-                        },
-                        ticks: {
-                            font: {
-                                size: 11
-                            }
-                        }
-                    }
+    const months = @json($months);
+    const pengeluaran = @json($pengeluaranPerBulan);
+
+    // Contexts
+    const ctx1 = document.getElementById('pengeluaranChart').getContext('2d');
+    const ctx2 = document.getElementById('perbandinganChart').getContext('2d');
+
+    // Line Chart
+    new Chart(ctx1, {
+        type: 'line',
+        data: {
+            labels: months.length ? months : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+            datasets: [
+                {
+                    label: 'Pengeluaran',
+                    data: pengeluaran.length ? pengeluaran : [20000000, 22000000, 1800000, 25000000, 19000000],
+                    borderColor: '#e67e22', // Orange
+                    backgroundColor: 'rgba(230, 126, 34, 0.1)',
+                    fill: true,
+                    tension: 0.4
                 }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+                y: { grid: { borderDash: [5, 5] }, ticks: { callback: val => 'Rp ' + val/1000 + 'k' } },
+                x: { grid: { display: false } }
             }
-        });
-    </script>
-</body>
-</html>
+        }
+    });
+
+    // Bar Chart
+    new Chart(ctx2, {
+        type: 'bar',
+        data: {
+            labels: months.length ? months : ['Jan', 'Feb', 'Mar', 'Apr', 'Mei'],
+            datasets: [
+                {
+                    label: 'Pengeluaran',
+                    data: pengeluaran.length ? pengeluaran : [20000000, 22000000, 1800000, 25000000, 19000000],
+                    backgroundColor: '#e67e22',
+                    borderRadius: 4
+                }
+            ]
+        },
+        options: {
+            responsive: true,
+            maintainAspectRatio: false,
+            plugins: { legend: { position: 'bottom' } },
+            scales: {
+                 y: { display: false },
+                 x: { grid: { display: false } }
+            }
+        }
+    });
+
+    // Success Modal Check
+    @if(session('success'))
+        // Optional: Trigger a success modal or toast here if specific success UI is needed
+    @endif
+});
+</script>
+@endsection
+
+

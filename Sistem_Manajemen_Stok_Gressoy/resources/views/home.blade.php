@@ -1,13 +1,20 @@
-<!DOCTYPE html>
-<html lang="id">
-<head>
-    <meta charset="UTF-8">
-    <title>Homepage Gressoy</title>
-</head>
-<body>
+@extends('layouts.home')
 
-<h1>Homepage Gressoy</h1>
-<p>Laravel berhasil berjalan 🎉</p>
-
-</body>
-</html>
+@section('content')
+<section class="hero">
+    <div class="hero-container">
+        <div class="hero-content">
+            <div class="hero-text">
+                <h1>
+                    MENYUSU<br>
+                    KEDELAIKAN<br>
+                    <span>INDONESIA</span>
+                </h1>
+            </div>
+            <div class="hero-image">
+                {{-- Image removed as requested --}}
+            </div>
+        </div>
+    </div>
+</section>
+@endsection

@@ -1,0 +1,84 @@
+/* KEUANGAN STYLES */
+
+.keuangan-container {
+    padding: 10px;
+}
+
+/* CARDS & PANELS */
+.summary-card .icon-box {
+    background-color: rgba(46, 204, 113, 0.1) !important;
+}
+
+.card {
+    border-radius: 12px;
+}
+
+.table-responsive {
+    border-radius: 12px;
+}
+
+.table thead th {
+    font-weight: 600;
+    font-size: 14px;
+    color: #555;
+    background-color: #f8f9fa;
+    border-bottom: 2px solid #eee;
+}
+
+.table tbody td {
+    font-size: 14px;
+    vertical-align: middle;
+}
+
+.fw-bold {
+    font-weight: 600 !important;
+}
+
+/* TEXT COLORS */
+.text-success {
+    color: #2ecc71 !important;
+}
+
+.text-primary {
+    color: #3498db !important;
+}
+
+/* MODAL */
+.modal-content {
+    border: none;
+}
+
+.modal-header {
+    border-bottom: 0;
+}
+
+.form-control, .form-select {
+    font-size: 14px;
+    padding: 10px 15px;
+    border-radius: 8px;
+}
+
+.form-control:focus, .form-select:focus {
+    box-shadow: none;
+    background-color: #fff !important;
+    border: 1px solid #2ecc71 !important;
+}
+
+.btn-success {
+    background-color: #2ecc71;
+    border-color: #2ecc71;
+    font-weight: 500;
+    transition: all 0.3s;
+}
+
+.btn-success:hover {
+    background-color: #27ae60;
+    border-color: #27ae60;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 10px rgba(46, 204, 113, 0.3);
+}
+
+.btn-outline-secondary:hover {
+    background-color: #6c757d;
+    color: white;
+}

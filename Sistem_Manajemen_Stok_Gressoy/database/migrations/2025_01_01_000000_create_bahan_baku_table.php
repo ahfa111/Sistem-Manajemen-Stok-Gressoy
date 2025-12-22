@@ -17,6 +17,8 @@ return new class extends Migration
             $table->decimal('stok_minimum', 10, 2)->default(0);
             $table->decimal('stok_tersedia', 10, 2)->default(0);
             $table->decimal('harga_satuan', 15, 2)->default(0);
+            $table->string('supplier', 100)->nullable();
+            $table->date('terakhir_restok')->nullable();
             $table->text('keterangan')->nullable();
             $table->timestamps();
             

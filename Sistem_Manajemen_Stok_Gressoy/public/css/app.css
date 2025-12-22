@@ -1,0 +1,29 @@
+/* Sidebar item default */
+.sidebar-item {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    padding: 12px 16px;
+    border-radius: 10px;
+    color: #2d2d2d;
+    text-decoration: none;
+    font-weight: 500;
+    transition: all 0.2s ease;
+}
+
+/* Hover */
+.sidebar-item:hover {
+    background-color: #eaf7ef;
+    color: #2e7d32;
+}
+
+/* ACTIVE (Dashboard hijau) */
+.sidebar-item.active {
+    background-color: #2ecc71;   /* HIJAU */
+    color: #ffffff;
+}
+
+/* Icon ikut putih saat active */
+.sidebar-item.active i {
+    color: #ffffff;
+}
