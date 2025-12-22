@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\KeuanganController;
 
 /*
 |--------------------------------------------------------------------------
@@ -16,3 +17,30 @@ use Illuminate\Support\Facades\Route;
 Route::get('/', function () {
     return view('welcome');
 });
+
+Route::get('/dashboard', function () {
+    return view('dashboard');
+})->name('dashboard');
+
+Route::get('/keuangan', [KeuanganController::class, 'index'])->name('keuangan.index');
+
+Route::post('/keuangan/tambah', [KeuanganController::class, 'tambahTransaksi'])->name('keuangan.tambah');
+
+Route::get('/bahan-baku', function () {
+    return view('bahan-baku.index');
+})->name('bahan-baku');
+
+Route::get('/laporan', function () {
+    return view('laporan.index');
+})->name('laporan');
+
+Route::get('/pengaturan', function () {
+    return view('pengaturan.index');
+})->name('pengaturan');
+
+Route::post('/logout', function () {
+    // Auth::logout();
+    // session()->invalidate();
+    // session()->regenerateToken();
+    return redirect('/');
+})->name('logout');
