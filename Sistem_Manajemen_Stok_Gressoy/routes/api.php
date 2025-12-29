@@ -17,3 +17,6 @@ use Illuminate\Support\Facades\Route;
 Route::middleware('auth:sanctum')->get('/user', function (Request $request) {
     return $request->user();
 });
+
+Route::get('/bahan-baku', [App\Http\Controllers\Api\BahanBakuController::class, 'index']);
+Route::get('/bahan-baku/{id}', [App\Http\Controllers\Api\BahanBakuController::class, 'show']);

@@ -8,7 +8,7 @@ use App\Models\BahanBaku;
 
 class BahanBakuController extends Controller
 {
-     public function index()
+    public function index()
     {
         $data = BahanBaku::latest()->get();
         
@@ -18,6 +18,11 @@ class BahanBakuController extends Controller
         $stokMenipis = BahanBaku::whereColumn('stok_tersedia', '<', 'stok_minimum')->count();
 
         return view('bahan-baku.index', compact('data', 'totalItem', 'stokNormal', 'stokMenipis'));
+    }
+
+    public function create()
+    {
+        return view('bahan-baku.create');
     }
 
     public function store(Request $request)
@@ -37,14 +42,20 @@ class BahanBakuController extends Controller
 
         BahanBaku::create($request->all());
 
-        return back()->with('success', 'Bahan baku berhasil ditambahkan');
+        return redirect()->route('bahan-baku.index')->with('success', 'Bahan baku berhasil ditambahkan');
+    }
+
+    public function edit($id)
+    {
+        $bahan = BahanBaku::findOrFail($id);
+        return view('bahan-baku.edit', compact('bahan'));
     }
 
     public function update(Request $request, $id)
     {
         $bahan = BahanBaku::findOrFail($id);
         $bahan->update($request->all());
-        return back()->with('success', 'Data bahan baku berhasil diupdate');
+        return redirect()->route('bahan-baku.index')->with('success', 'Data bahan baku berhasil diupdate');
     }
 
     public function destroy($id)
@@ -55,8 +66,42 @@ class BahanBakuController extends Controller
 
     public function tambahStok(Request $request)
     {
-        // Not used directly in this design iteration but kept for route compatibility
-        return back();
+        $request->validate([
+            'id' => 'required|exists:bahan_baku,id',
+            'jumlah' => 'required|numeric|min:0.01',
+            'harga_baru' => 'required|numeric|min:0',
+        ]);
+
+        $bahan = BahanBaku::findOrFail($request->id);
+        
+        // Calculate Weighted Average Price
+        // Current Value
+        $oldStock = $bahan->stok_tersedia;
+        $oldPrice = $bahan->harga_satuan;
+        $oldTotalValue = $oldStock * $oldPrice;
+
+        // New Value
+        $newStock = $request->jumlah;
+        $newPrice = $request->harga_baru;
+        $newTotalValue = $newStock * $newPrice;
+
+        // Final Calculation
+        $totalStock = $oldStock + $newStock;
+        
+        // Prevent division by zero if total stock is somehow 0 (unlikely here but safe)
+        if ($totalStock > 0) {
+            $averagePrice = ($oldTotalValue + $newTotalValue) / $totalStock;
+        } else {
+            $averagePrice = $newPrice;
+        }
+
+        // Update Data
+        $bahan->stok_tersedia = $totalStock;
+        $bahan->harga_satuan = $averagePrice;
+        $bahan->terakhir_restok = now();
+        $bahan->save();
+
+        return redirect()->route('bahan-baku.index')->with('success', 'Stok berhasil ditambahkan. Harga rata-rata diperbarui.');
     }
 
     public function kurangStok(Request $request)
