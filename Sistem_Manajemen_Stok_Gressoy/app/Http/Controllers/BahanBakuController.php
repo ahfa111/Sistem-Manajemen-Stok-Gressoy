@@ -3,8 +3,9 @@
 namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
-
 use App\Models\BahanBaku;
+use App\Models\Supplier;
+use Carbon\Carbon;
 
 class BahanBakuController extends Controller
 {
@@ -17,7 +18,26 @@ class BahanBakuController extends Controller
         $stokNormal = BahanBaku::whereColumn('stok_tersedia', '>=', 'stok_minimum')->count();
         $stokMenipis = BahanBaku::whereColumn('stok_tersedia', '<', 'stok_minimum')->count();
 
-        return view('bahan-baku.index', compact('data', 'totalItem', 'stokNormal', 'stokMenipis'));
+        // Suppliers Data for the Tab
+        $suppliers = Supplier::latest()->get();
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'List Data Bahan Baku',
+                'data' => [
+                    'bahan_baku' => $data,
+                    'stats' => [
+                        'total_item' => $totalItem,
+                        'stok_normal' => $stokNormal,
+                        'stok_menipis' => $stokMenipis
+                    ],
+                    'suppliers' => $suppliers
+                ]
+            ]);
+        }
+
+        return view('bahan-baku.index', compact('data', 'totalItem', 'stokNormal', 'stokMenipis', 'suppliers'));
     }
 
     public function create()
@@ -40,7 +60,13 @@ class BahanBakuController extends Controller
             'keterangan' => 'nullable'
         ]);
 
-        BahanBaku::create($request->all());
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Bahan baku berhasil ditambahkan',
+                'data' => $bahan
+            ], 201);
+        }
 
         return redirect()->route('bahan-baku.index')->with('success', 'Bahan baku berhasil ditambahkan');
     }
@@ -55,12 +81,29 @@ class BahanBakuController extends Controller
     {
         $bahan = BahanBaku::findOrFail($id);
         $bahan->update($request->all());
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data bahan baku berhasil diupdate',
+                'data' => $bahan
+            ]);
+        }
+
         return redirect()->route('bahan-baku.index')->with('success', 'Data bahan baku berhasil diupdate');
     }
 
     public function destroy($id)
     {
-        BahanBaku::findOrFail($id)->delete();
+        $bahan = BahanBaku::findOrFail($id);
+        $bahan->delete();
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Bahan baku berhasil dihapus'
+            ]);
+        }
+
         return back()->with('success', 'Bahan baku berhasil dihapus');
     }
 

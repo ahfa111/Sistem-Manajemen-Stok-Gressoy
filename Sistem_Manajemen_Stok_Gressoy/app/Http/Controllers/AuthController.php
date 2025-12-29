@@ -24,8 +24,29 @@ class AuthController extends Controller
         ]);
 
         if (Auth::attempt($credentials)) {
+            $user = Auth::user();
+            if ($request->wantsJson() || $request->is('api/*')) {
+                $token = $user->createToken('auth_token')->plainTextToken;
+                return response()->json([
+                    'success' => true,
+                    'message' => 'Login berhasil',
+                    'data' => [
+                        'user' => $user,
+                        'access_token' => $token,
+                        'token_type' => 'Bearer'
+                    ]
+                ]);
+            }
+
             $request->session()->regenerate();
             return redirect()->route('dashboard');
+        }
+
+        if ($request->wantsJson() || $request->is('api/*')) {
+            return response()->json([
+                'success' => false,
+                'message' => 'Email atau password salah'
+            ], 401);
         }
 
         return back()->withErrors([
@@ -48,6 +69,27 @@ class AuthController extends Controller
             'password' => 'required|min:6|confirmed',
         ]);
 
+        if ($request->wantsJson() || $request->is('api/*')) {
+            $user = User::create([
+                'username' => $request->username,
+                'email' => $request->email,
+                'password' => Hash::make($request->password),
+                'role' => 'keuangan', 
+            ]);
+
+            $token = $user->createToken('auth_token')->plainTextToken;
+
+            return response()->json([
+                'success' => true,
+                'message' => 'Registrasi berhasil',
+                'data' => [
+                    'user' => $user,
+                    'access_token' => $token,
+                    'token_type' => 'Bearer'
+                ]
+            ], 201);
+        }
+
         User::create([
             'username' => $request->username,
             'email' => $request->email,
@@ -61,6 +103,15 @@ class AuthController extends Controller
     // LOGOUT
     public function logout(Request $request)
     {
+        if ($request->wantsJson() || $request->is('api/*')) {
+            // Revoke current token
+            $request->user()->currentAccessToken()->delete();
+            return response()->json([
+                'success' => true,
+                'message' => 'Logout berhasil'
+            ]);
+        }
+
         Auth::logout();
         $request->session()->invalidate();
         $request->session()->regenerateToken();

@@ -23,6 +23,24 @@
         </div>
     </div>
 
+    {{-- TABS NAVIGATION --}}
+    <ul class="nav nav-pills mb-4" id="pills-tab" role="tablist">
+        <li class="nav-item" role="presentation">
+            <button class="nav-link active rounded-pill px-4" id="pills-stok-tab" data-bs-toggle="pill" data-bs-target="#pills-stok" type="button" role="tab">
+                <i class="bi bi-box-seam me-2"></i>Stok Bahan Baku
+            </button>
+        </li>
+        <li class="nav-item" role="presentation">
+            <button class="nav-link rounded-pill px-4" id="pills-supplier-tab" data-bs-toggle="pill" data-bs-target="#pills-supplier" type="button" role="tab">
+                <i class="bi bi-truck me-2"></i>Data Supplier
+            </button>
+        </li>
+    </ul>
+
+    <div class="tab-content" id="pills-tabContent">
+        {{-- STOK TAB --}}
+        <div class="tab-pane fade show active" id="pills-stok" role="tabpanel">
+
     {{-- STATS CARDS --}}
     <div class="row mb-4">
         <div class="col-md-4">
@@ -134,6 +152,14 @@
                     </tbody>
                 </table>
             </div>
+        </div>
+    </div>
+    </div>
+        </div>
+
+        {{-- SUPPLIER TAB --}}
+        <div class="tab-pane fade" id="pills-supplier" role="tabpanel">
+            @include('supplier.index')
         </div>
     </div>
 </div>

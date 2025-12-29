@@ -43,6 +43,13 @@
                                 <small class="text-muted">Ubah password</small>
                             </div>
                         </a>
+                        <a href="#users" class="list-group-item list-group-item-action p-3 d-flex align-items-center" data-bs-toggle="list">
+                            <i class="bi bi-people me-3 fs-5"></i>
+                            <div>
+                                <div class="fw-bold">Kelola Pengguna</div>
+                                <small class="text-muted">Manajemen user sistem</small>
+                            </div>
+                        </a>
                     </div>
                 </div>
             </div>
@@ -71,6 +78,12 @@
                 <div class="tab-pane fade" id="keamanan">
                     @include('pengaturan.partials.keamanan')
                 </div>
+
+                {{-- USERS --}}
+                <div class="tab-pane fade" id="users">
+                    @include('pengaturan.partials.users')
+                </div>
+
 
             </div>
         </div>

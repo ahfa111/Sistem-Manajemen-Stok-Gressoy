@@ -11,7 +11,17 @@ class PengaturanController extends Controller
     public function index()
     {
         $user = Auth::user();
-        return view('pengaturan.index', compact('user'));
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Data Pengaturan User',
+                'data' => $user
+            ]);
+        }
+
+        $all_users = \App\Models\User::all();
+        return view('pengaturan.index', compact('user', 'all_users'));
     }
 
     public function updateProfile(Request $request)
@@ -28,6 +38,14 @@ class PengaturanController extends Controller
             'phone_number' => $request->phone_number,
             'job_title' => $request->job_title,
         ]);
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Profil berhasil diperbarui',
+                'data' => $user
+            ]);
+        }
 
         return back()->with('success', 'Profil berhasil diperbarui.');
     }
@@ -51,6 +69,14 @@ class PengaturanController extends Controller
             'business_type' => $request->business_type,
         ]);
 
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Info Perusahaan berhasil diperbarui',
+                'data' => $user
+            ]);
+        }
+
         return back()->with('success', 'Info Perusahaan berhasil diperbarui.');
     }
 
@@ -65,6 +91,14 @@ class PengaturanController extends Controller
             'notify_daily_report' => $request->has('notify_daily_report'),
             'notify_email' => $request->has('notify_email'),
         ]);
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Pengaturan notifikasi berhasil disimpan',
+                'data' => $user
+            ]);
+        }
 
         return back()->with('success', 'Pengaturan notifikasi berhasil disimpan.');
     }
@@ -86,6 +120,13 @@ class PengaturanController extends Controller
             'password' => Hash::make($request->new_password),
         ]);
 
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Password berhasil diubah'
+            ]);
+        }
+
         return back()->with('success', 'Password berhasil diubah.');
     }
     public function deleteAccount(Request $request)
@@ -106,6 +147,13 @@ class PengaturanController extends Controller
 
         $request->session()->invalidate();
         $request->session()->regenerateToken();
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Akun Anda berhasil dihapus'
+            ]);
+        }
 
         return redirect('/login')->with('success', 'Akun Anda berhasil dihapus.');
     }

@@ -35,6 +35,14 @@ class KeuanganController extends Controller
             $pengeluaranPerBulan[] = $item->pengeluaran;
         }
 
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'List Data Transaksi Keuangan',
+                'data' => $data
+            ]);
+        }
+
         return view('keuangan.index', compact(
             'data', 
             'totalPengeluaran',

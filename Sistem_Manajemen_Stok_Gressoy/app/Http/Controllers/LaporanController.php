@@ -18,6 +18,20 @@ class LaporanController extends Controller
         $totalPembelian = Laporan::sum('total_pembelian');
         $totalBarangKeluar = Laporan::sum('total_barang_keluar');
 
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'List Data Laporan',
+                'data' => [
+                    'laporan' => $laporans,
+                    'stats' => [
+                        'total_pembelian' => $totalPembelian,
+                        'total_barang_keluar' => $totalBarangKeluar
+                    ]
+                ]
+            ]);
+        }
+
         return view('laporan.index', compact('laporans', 'totalPembelian', 'totalBarangKeluar'));
     }
 
@@ -31,7 +45,15 @@ class LaporanController extends Controller
             'catatan' => 'nullable'
         ]);
 
-        Laporan::create($request->all());
+        $laporan = Laporan::create($request->all());
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Laporan berhasil disimpan',
+                'data' => $laporan
+            ], 201);
+        }
 
         return back()->with('success', 'Laporan berhasil disimpan dan diarsipkan.');
     }
@@ -49,12 +71,28 @@ class LaporanController extends Controller
         $laporan = Laporan::findOrFail($id);
         $laporan->update($request->all());
 
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Laporan berhasil diperbarui',
+                'data' => $laporan
+            ]);
+        }
+
         return back()->with('success', 'Laporan berhasil diperbarui.');
     }
 
     public function destroy($id)
     {
         Laporan::findOrFail($id)->delete();
+
+        if (request()->wantsJson() || request()->is('api/*')) {
+            return response()->json([
+                'success' => true,
+                'message' => 'Laporan berhasil dihapus'
+            ]);
+        }
+
         return back()->with('success', 'Laporan berhasil dihapus.');
     }
 }

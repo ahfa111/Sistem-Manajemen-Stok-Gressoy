@@ -7,6 +7,7 @@ use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\AuthController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\KeuanganController;
+use App\Http\Controllers\ManajemenUserController;
 
 Route::get('/keuangan', [KeuanganController::class, 'index'])
     ->name('keuangan.index');
@@ -67,6 +68,14 @@ Route::prefix('bahan-baku')->name('bahan-baku.')->group(function () {
     Route::post('/kurang-stok', [BahanBakuController::class, 'kurangStok'])->name('kurangStok');
 });
 
+Route::prefix('suppliers')->name('suppliers.')->middleware('auth')->group(function () {
+    Route::get('/create', [App\Http\Controllers\SupplierController::class, 'create'])->name('create');
+    Route::get('/{id}/edit', [App\Http\Controllers\SupplierController::class, 'edit'])->name('edit');
+    Route::post('/', [App\Http\Controllers\SupplierController::class, 'store'])->name('store');
+    Route::put('/{id}', [App\Http\Controllers\SupplierController::class, 'update'])->name('update');
+    Route::delete('/{id}', [App\Http\Controllers\SupplierController::class, 'destroy'])->name('destroy');
+});
+
 Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
     Route::get('/', [App\Http\Controllers\PengaturanController::class, 'index'])->name('index');
     Route::put('/profil', [App\Http\Controllers\PengaturanController::class, 'updateProfile'])->name('updateProfile');
@@ -74,6 +83,13 @@ Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
     Route::put('/notifikasi', [App\Http\Controllers\PengaturanController::class, 'updateNotifications'])->name('updateNotifications');
     Route::put('/password', [App\Http\Controllers\PengaturanController::class, 'updatePassword'])->name('updatePassword');
     Route::delete('/delete-account', [App\Http\Controllers\PengaturanController::class, 'deleteAccount'])->name('deleteAccount');
+});
+
+// User Management Routes
+Route::prefix('users')->name('users.')->middleware('auth')->group(function () {
+    Route::post('/', [ManajemenUserController::class, 'store'])->name('store');
+    Route::put('/{id}', [ManajemenUserController::class, 'update'])->name('update');
+    Route::delete('/{id}', [ManajemenUserController::class, 'destroy'])->name('destroy');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])
