@@ -13,7 +13,9 @@ Route::get('/keuangan', [KeuanganController::class, 'index'])
     
 Route::prefix('keuangan')->middleware('auth')->group(function () {
     Route::get('/', [KeuanganController::class, 'index'])->name('keuangan.index');
+    Route::get('/create', [KeuanganController::class, 'create'])->name('keuangan.create');
     Route::post('/store', [KeuanganController::class, 'store'])->name('keuangan.store');
+    Route::get('/{id}/edit', [KeuanganController::class, 'edit'])->name('keuangan.edit');
     Route::put('/{id}', [KeuanganController::class, 'update'])->name('keuangan.update');
     Route::delete('/{id}', [KeuanganController::class, 'destroy'])->name('keuangan.destroy');
 });

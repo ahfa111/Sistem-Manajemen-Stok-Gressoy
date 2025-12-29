@@ -43,6 +43,11 @@ class KeuanganController extends Controller
         ));
     }
 
+    public function create()
+    {
+        return view('keuangan.create');
+    }
+
     public function store(Request $request)
     {
         $request->validate([
@@ -56,13 +61,28 @@ class KeuanganController extends Controller
 
         Keuangan::create($request->all());
 
-        return back()->with('success', 'Transaksi berhasil ditambahkan');
+        return redirect()->route('keuangan.index')->with('success', 'Transaksi berhasil ditambahkan');
+    }
+
+    public function edit($id)
+    {
+        $keuangan = Keuangan::findOrFail($id);
+        return view('keuangan.edit', compact('keuangan'));
     }
 
     public function update(Request $request, $id)
     {
+        $request->validate([
+            'tipe' => 'required',
+            'tanggal' => 'required|date',
+            'kode' => 'required',
+            'kategori' => 'required',
+            'jumlah' => 'required|numeric',
+            'deskripsi' => 'nullable'
+        ]);
+
         Keuangan::findOrFail($id)->update($request->all());
-        return back()->with('success', 'Transaksi berhasil diupdate');
+        return redirect()->route('keuangan.index')->with('success', 'Transaksi berhasil diupdate');
     }
 
     public function destroy($id)
