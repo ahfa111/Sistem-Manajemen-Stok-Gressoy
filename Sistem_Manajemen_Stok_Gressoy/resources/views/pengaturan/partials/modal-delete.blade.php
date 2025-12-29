@@ -8,7 +8,7 @@
             </div>
             <div class="modal-body p-4">
                 <p class="text-muted mb-4">Apakah Anda yakin ingin menghapus akun ini? Masukkan password Anda untuk mengonfirmasi tindakan ini.</p>
-                <form action="{{ route('pengaturan.deleteAccount') }}" method="GET">
+                <form action="{{ route('pengaturan.deleteAccount') }}" method="POST">
                     @csrf
                     @method('DELETE')
                     <div class="mb-3">
