@@ -73,6 +73,7 @@ Route::prefix('pengaturan')->name('pengaturan.')->group(function () {
     Route::put('/perusahaan', [App\Http\Controllers\PengaturanController::class, 'updateCompany'])->name('updateCompany');
     Route::put('/notifikasi', [App\Http\Controllers\PengaturanController::class, 'updateNotifications'])->name('updateNotifications');
     Route::put('/password', [App\Http\Controllers\PengaturanController::class, 'updatePassword'])->name('updatePassword');
+    Route::delete('/delete-account', [App\Http\Controllers\PengaturanController::class, 'deleteAccount'])->name('deleteAccount');
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])

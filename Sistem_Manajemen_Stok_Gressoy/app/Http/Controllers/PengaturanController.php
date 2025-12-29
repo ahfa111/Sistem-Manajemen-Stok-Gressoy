@@ -88,4 +88,25 @@ class PengaturanController extends Controller
 
         return back()->with('success', 'Password berhasil diubah.');
     }
+    public function deleteAccount(Request $request)
+    {
+        $request->validate([
+            'password' => 'required',
+        ]);
+
+        $user = Auth::user();
+
+        if (!Hash::check($request->password, $user->password)) {
+            return back()->withErrors(['password' => 'Password yang Anda masukkan salah.']);
+        }
+
+        Auth::logout();
+
+        $user->delete();
+
+        $request->session()->invalidate();
+        $request->session()->regenerateToken();
+
+        return redirect('/login')->with('success', 'Akun Anda berhasil dihapus.');
+    }
 }
