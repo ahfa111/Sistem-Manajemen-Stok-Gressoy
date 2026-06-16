@@ -60,6 +60,8 @@ class BahanBakuController extends Controller
             'keterangan' => 'nullable'
         ]);
 
+        $bahan = BahanBaku::create($request->all());
+
         if (request()->wantsJson() || request()->is('api/*')) {
             return response()->json([
                 'success' => true,
