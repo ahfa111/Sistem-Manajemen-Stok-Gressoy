@@ -64,7 +64,7 @@
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Password (Kosongkan jika tidak diganti)</label>
-                                            <input type="password" name="password" class="form-control" placeholder="Minimal 6 karakter">
+                                            <input type="password" name="password" class="form-control" placeholder="Minimal 8 karakter">
                                         </div>
                                         <div class="mb-3">
                                             <label class="form-label">Role</label>
@@ -111,7 +111,7 @@
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Password</label>
-                        <input type="password" name="password" class="form-control" required minlength="6">
+                        <input type="password" name="password" class="form-control" required minlength="8" oninvalid="this.setCustomValidity('Password minimal harus 8 karakter')" oninput="this.setCustomValidity('')">
                     </div>
                     <div class="mb-3">
                         <label class="form-label">Role</label>

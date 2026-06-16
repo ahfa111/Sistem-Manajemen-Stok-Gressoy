@@ -15,12 +15,14 @@ class AuthController extends Controller
         return view('auth.login');
     }
 
-    // PROSES LOGIN
+   
     public function login(Request $request)
     {
         $credentials = $request->validate([
             'email' => 'required',
-            'password' => 'required'
+            'password' => 'required|min:8'
+        ], [
+            'password.min' => 'Password minimal harus 8 karakter.'
         ]);
 
         if (Auth::attempt($credentials)) {
@@ -66,7 +68,9 @@ class AuthController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6|confirmed',
+            'password' => 'required|min:8|confirmed',
+        ], [
+            'password.min' => 'Password minimal harus 8 karakter.'
         ]);
 
         if ($request->wantsJson() || $request->is('api/*')) {

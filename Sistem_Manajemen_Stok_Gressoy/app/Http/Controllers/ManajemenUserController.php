@@ -30,8 +30,10 @@ class ManajemenUserController extends Controller
         $request->validate([
             'username' => 'required|unique:users',
             'email' => 'required|email|unique:users',
-            'password' => 'required|min:6',
+            'password' => 'required|min:8',
             'role' => 'required'
+        ], [
+            'password.min' => 'Password minimal harus 8 karakter.'
         ]);
 
         $user = User::create([
@@ -69,7 +71,9 @@ class ManajemenUserController extends Controller
         ];
 
         if ($request->filled('password')) {
-            $request->validate(['password' => 'min:6']);
+            $request->validate(['password' => 'min:8'], [
+                'password.min' => 'Password minimal harus 8 karakter.'
+            ]);
             $data['password'] = Hash::make($request->password);
         }
 

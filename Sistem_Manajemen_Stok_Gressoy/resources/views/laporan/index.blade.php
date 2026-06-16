@@ -11,7 +11,7 @@
             <p class="text-muted mb-0">Analisis dan laporan bisnis</p>
         </div>
         <button class="btn btn-success rounded-pill px-4 shadow-sm" data-bs-toggle="modal" data-bs-target="#modalSimpanPDF">
-            <i class="bi bi-download me-2"></i>Simpan PDF
+            <i class="bi bi-plus-circle me-2"></i>Input Laporan
         </button>
     </div>
 

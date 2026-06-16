@@ -19,14 +19,14 @@
             <div class="mb-3">
                 <label class="form-label small text-muted fw-bold">Password Baru</label>
                 <div class="input-group">
-                    <input type="password" name="new_password" class="form-control bg-light" required>
+                    <input type="password" name="new_password" class="form-control bg-light" required minlength="8" oninvalid="this.setCustomValidity('Password minimal harus 8 karakter')" oninput="this.setCustomValidity('')">
                     <span class="input-group-text bg-light border-start-0"><i class="bi bi-eye-slash text-muted"></i></span>
                 </div>
             </div>
             <div class="mb-4">
                 <label class="form-label small text-muted fw-bold">Konfirmasi Password Baru</label>
                 <div class="input-group">
-                    <input type="password" name="new_password_confirmation" class="form-control bg-light" required>
+                    <input type="password" name="new_password_confirmation" class="form-control bg-light" required minlength="8" oninvalid="this.setCustomValidity('Password minimal harus 8 karakter')" oninput="this.setCustomValidity('')">
                     <span class="input-group-text bg-light border-start-0"><i class="bi bi-eye-slash text-muted"></i></span>
                 </div>
             </div>

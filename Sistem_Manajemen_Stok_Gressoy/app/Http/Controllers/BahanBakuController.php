@@ -24,7 +24,7 @@ class BahanBakuController extends Controller
         if (request()->wantsJson() || request()->is('api/*')) {
             return response()->json([
                 'success' => true,
-                'message' => 'List Data Bahan Baku',
+                 'message' => 'List Data Bahan Baku',
                 'data' => [
                     'bahan_baku' => $data,
                     'stats' => [

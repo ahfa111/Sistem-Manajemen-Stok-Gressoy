@@ -107,7 +107,10 @@ class PengaturanController extends Controller
     {
         $request->validate([
             'current_password' => 'required',
-            'new_password' => 'required|min:6|confirmed',
+            'new_password' => 'required|min:8|confirmed',
+        ], [
+            'new_password.min' => 'Password minimal harus 8 karakter.',
+            'new_password.confirmed' => 'Konfirmasi password tidak cocok.'
         ]);
 
         $user = Auth::user();
